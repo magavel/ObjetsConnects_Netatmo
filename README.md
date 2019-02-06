@@ -16,3 +16,7 @@ $config['scope'] = 'read_station read_thermostat write_thermostat';
 ````
 
 Le ***client_id*** et le ***client_secret*** sont à récupérer via une inscription chez netatmo.
+
+
+[demo](https://miw.ovh/avel/)
+

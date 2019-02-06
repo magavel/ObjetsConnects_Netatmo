@@ -1,11 +1,11 @@
-#Projet NETATMO
+# Projet NETATMO
 
 Récuper via une carte openstreetmap l'ensembles des 
 informations publiques des stations 
 netatmo présentent sur la carte et afficher ces stations sur la carte. 
 
 
-###Préliminaires
+### Préliminaires
 
 A la racine créer le fichier config.php
 ````php

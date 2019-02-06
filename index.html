@@ -46,6 +46,22 @@
 
 
 
+
+    const validatedTown = ()=> {
+        let zoom='zoom=2'; // Niveau de zoom demandé où 0 est le niveau pays et 18 le niveau maison/immeuble
+        // a priori ne fonctionne pas avec cette requete
+        let email='email=avel.feron@gmail.com';
+        let countrycodes ='countrycodes=fr';
+
+        let url =`https://nominatim.openstreetmap.org/search?q= ${ville.value}&format=json&${countrycodes}&${email}&${zoom}&polygon=1&addressdetails=1` ;
+        $get(url, null, affiche, erreur);
+
+        let afficheur = new Afficheur('gray');
+        afficheur.display(400,50);
+
+    }
+
+
     map.on('moveend', function(evt) {
 
         //récupération des coordonnées de la BBox
@@ -74,26 +90,38 @@
             console.log('nbre de stations: '+ reponse['body'].length);
             let nbreStations = reponse['body'].length;
             console.log(nbreStations);
-            afficheur.afficheNbreStations(nbreStations);
+            //afficheur.afficheNbreStations(nbreStations);
+            let module_type = "";
+            let valTemp = "";
+
+
+            for (i=0;i<nbreStations;i++) {
+                for (modType in reponse['body'][i]['module_types']) {
+                    if (reponse['body'][i]['module_types'][modType] === 'NAModule1') {
+                        module_type =  modType;
+                        console.log('Module type: ' + module_type)
+                    }
+                }
+                for (temps in reponse['body'][i]['measures'][module_type]['res']) {
+                    valTemp = temps;
+                    console.log('température: ' + valTemp[0])
+
+                }
+                console.log(i);
+                // console.log(reponse2['body'][i]['measures'][module]['res'][valTemp][0]);
+            }
+
+
+
+
+
         }
         
     });
 
 
 
-    const validatedTown = ()=> {
-        let zoom='zoom=2'; // Niveau de zoom demandé où 0 est le niveau pays et 18 le niveau maison/immeuble
-                            // a priori ne fonctionne pas avec cette requete
-        let email='email=avel.feron@gmail.com';
-        let countrycodes ='countrycodes=fr';
 
-        let url =`https://nominatim.openstreetmap.org/search?q= ${ville.value}&format=json&${countrycodes}&${email}&${zoom}&polygon=1&addressdetails=1` ;
-        $get(url, null, affiche, erreur);
-
-        var afficheur = new Afficheur('gray')
-        afficheur.display(400,50);
-
-    }
 
 
         function affiche (r) {
@@ -114,6 +142,11 @@ function retourToken(r){
         function erreur(req) {
             console.log("Erreur dans la req Xhr:  "+req.status)
         }
+
+
+
+
+
 
 
     class Afficheur {
@@ -160,21 +193,44 @@ function retourToken(r){
             nbreStations.style.position='absolute';
             nbreStations.style.top = 25+'px';
             nbreStations.style.left = 10+'px';
-
             div.appendChild(nbreStations);
+
+
+            this.avgTemp = document.createElement("div");
+            let avgTemp = this.avgTemp;
+            avgTemp.innerHTML='Température moyenne: '
+            avgTemp.style.position='absolute';
+            avgTemp.style.top = 85+'px';
+            avgTemp.style.left = 10+'px';
+            div.appendChild(avgTemp);
 
             this.affNbreStation=document.createElement("input");
             this.affNbreStation.style.width = 25+'px';
             this.affNbreStation.style.height = 25+'px';
             this.affNbreStation.style.position = 'absolute';
             this.affNbreStation.style.top = 10+'px';
-            this.affNbreStation.style.left = 150+'px';
+            this.affNbreStation.style.left = 200+'px';
             this.affNbreStation.style.textAlign = 'center';
             this.affNbreStation.style.fontSize = 19+'px';
             this.affNbreStation.readOnly=true;
             this.affNbreStation.value = 0;
-
             div.appendChild(this.affNbreStation);
+
+
+            this.affAvgTemp=document.createElement("input");
+            this.affAvgTemp.style.width = 25+'px';
+            this.affAvgTemp.style.height = 25+'px';
+            this.affAvgTemp.style.position = 'absolute';
+            this.affAvgTemp.style.top = 70+'px';
+            this.affAvgTemp.style.left = 200+'px';
+            this.affAvgTemp.style.textAlign = 'center';
+            this.affAvgTemp.style.fontSize = 19+'px';
+            this.affAvgTemp.readOnly=true;
+            this.affAvgTemp.value = 0;
+            div.appendChild(this.affAvgTemp);
+
+
+
 
 
         }

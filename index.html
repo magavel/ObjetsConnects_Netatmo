@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Netatmo</title>
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+    <script src="bibioAjax.js"></script>
+</head>
+<body>
+
+
+<p>Taper le nom d'une villes (mais pas trop fort):</p>
+<input type="text" name="address" id="ville" />
+<input type="submit" value="Envoyer" name="envoyer" onclick="validatedTown()">
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div>
+    <div id="map"></div>
+</div>
+
+</body>
+
+
+<script>
+
+    let divMap = document.createElement("div");
+    document.querySelector("body").appendChild(divMap);
+    var map = L.map('map');
+    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttrib='Map data © OpenStreetMap contributors';
+    var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
+    map.setView([43.0, 6.0], 6);
+    map.addLayer(osm);
+    let position;
+    let token='';
+    $get('netamo.php', null, retourToken, erreur);
+
+
+
+    map.on('moveend', function(evt) {
+
+        //récupération des coordonnées de la BBox
+        let param = map.getBounds().toBBoxString();
+        position = param.split(',');
+        let lat_ne=position[3];
+        let lon_ne=position[2];
+        let lat_sw=position[1];
+        let lon_sw=position[0];
+        //`https://api.netatmo.com/api/getpublicdata?access_token=5c3f1e7f2733bf0c008b916a|a3c8b76bc7be81915321ff7a13b7e18a&lat_ne=${lat_ne}&lon_ne=${lon_ne}&lat_sw=-${lat_sw}&lon_sw=${lon_sw}&required_data=temperature&filter=true`
+        let urlNetatmo = `https://api.netatmo.com/api/getpublicdata`;
+        let access_token = token;
+        let required_data='temperature';
+        let filter=true;
+        let paramNetatmo = {access_token, lat_ne, lon_ne, lat_sw, lon_sw, required_data, filter};
+        //console.log(paramNetatmo);
+        //console.log(urlNetatmo);
+        $get(urlNetatmo, paramNetatmo, getValueNetatmo , erreur);
+
+
+        function getValueNetatmo(r) {
+            let reponse = JSON.parse(r.responseText);
+            console.log(reponse['body'][0].measures);
+            console.log(reponse['body'][0]);
+            console.log('module type: '+reponse['body'][0]['module_types']);
+            console.log('nbre de stations: '+ reponse['body'].length);
+            let nbreStations = reponse['body'].length;
+            console.log(nbreStations);
+            afficheur.afficheNbreStations(nbreStations);
+        }
+        
+    });
+
+
+
+    const validatedTown = ()=> {
+        let zoom='zoom=2'; // Niveau de zoom demandé où 0 est le niveau pays et 18 le niveau maison/immeuble
+                            // a priori ne fonctionne pas avec cette requete
+        let email='email=avel.feron@gmail.com';
+        let countrycodes ='countrycodes=fr';
+
+        let url =`https://nominatim.openstreetmap.org/search?q= ${ville.value}&format=json&${countrycodes}&${email}&${zoom}&polygon=1&addressdetails=1` ;
+        $get(url, null, affiche, erreur);
+
+        var afficheur = new Afficheur('gray')
+        afficheur.display(400,50);
+
+    }
+
+
+        function affiche (r) {
+            let reponse = JSON.parse(r.responseText);
+            let lat = reponse[0].lat;
+            let lon = reponse[0].lon;
+            //console.log(`lat ${lat} lon ${lon}`);
+            map.setView([lat, lon], 12);
+
+
+        }
+
+function retourToken(r){
+     token =  r.response;
+     //console.log('token: '+token);
+}
+
+        function erreur(req) {
+            console.log("Erreur dans la req Xhr:  "+req.status)
+        }
+
+
+    class Afficheur {
+        constructor(color) {
+            this.color = color; // couleur
+        }
+
+        display(x, y) {
+
+            // mise en place de la div
+            this.div = document.createElement("div");
+            let div = this.div;
+            div.style.borderRadius = "10px";
+            div.style.position = "absolute";
+            div.style.left = x + "px";
+            div.style.top = y + "px";
+            div.style.width = "350px";
+            div.style.height = "150px";
+            div.style.backgroundColor = this.color;
+            document.querySelector("body").appendChild(div);
+
+            this.croix = document.createElement("img");
+            let croix = this.croix;
+            croix.src = "croix.jpg";
+            croix.style.borderRadius = "10px";
+            croix.style.position = "absolute";
+            croix.style.left = "320px";
+            croix.style.top = "8px";
+            croix.style.width = "18px";
+            croix.style.height = "18px";
+            div.appendChild(croix);
+
+            croix.onclick = () => {
+                this.div.parentNode.removeChild(this.div);
+                this.del(this)
+            };
+            croix.onmousedown = (e) => {
+                e.stopPropagation();
+            }
+
+            this.nbreStations = document.createElement("div");
+            let nbreStations = this.nbreStations;
+            nbreStations.innerHTML='Nombre de stations: '
+            nbreStations.style.position='absolute';
+            nbreStations.style.top = 25+'px';
+            nbreStations.style.left = 10+'px';
+
+            div.appendChild(nbreStations);
+
+            this.affNbreStation=document.createElement("input");
+            this.affNbreStation.style.width = 25+'px';
+            this.affNbreStation.style.height = 25+'px';
+            this.affNbreStation.style.position = 'absolute';
+            this.affNbreStation.style.top = 10+'px';
+            this.affNbreStation.style.left = 150+'px';
+            this.affNbreStation.style.textAlign = 'center';
+            this.affNbreStation.style.fontSize = 19+'px';
+            this.affNbreStation.readOnly=true;
+            this.affNbreStation.value = 0;
+
+            div.appendChild(this.affNbreStation);
+
+
+        }
+
+        /**
+         * méthode pour effacer les methodes en fonctionnement lors de la suppression de la classe
+         * @param obj
+         */
+        del(obj){    // obj c'est this
+
+            for(var i in obj){delete obj[i]}; // il faut supprimer toute les propriete de l'objet pour que l'objet soit
+            // entierement detruit et non pas seulement la partie visuel de l'objet
+
+        }
+
+        afficheNbreStations(r){
+            console.log('r ds la methode: '+r)
+            this.affNbreStation.value = r;
+        }
+    }
+
+
+
+
+</script>
+
+</html>

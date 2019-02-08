@@ -6,14 +6,16 @@
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
-    <script src="bibioAjax.js"></script>
+    <script src="bibliotheque.js"></script>
 </head>
 <body>
-
+Projet présent sur: <a href=" https://github.com/magavel/ObjetsConnects_Netatmo">https://github.com/magavel/ObjetsConnects_Netatmo</a>
 
 <p>Taper le nom d'une villes (mais pas trop fort):</p>
 <input type="text" name="address" id="ville" />
 <input type="submit" value="Envoyer" name="envoyer" onclick="validatedTown()">
+<br>
+
 <br>
 <br>
 <br>
@@ -84,32 +86,50 @@
 
         function getValueNetatmo(r) {
             let reponse = JSON.parse(r.responseText);
-            console.log(reponse['body'][0].measures);
-            console.log(reponse['body'][0]);
-            console.log('module type: '+reponse['body'][0]['module_types']);
-            console.log('nbre de stations: '+ reponse['body'].length);
+            console.log(reponse['body'][19].measures);
+            //console.log(reponse['body'][0]);
+            //console.log('module type: '+reponse['body'][0]['module_types']);
+            //console.log('nbre de stations: '+ reponse['body'].length);
             let nbreStations = reponse['body'].length;
-            console.log(nbreStations);
+            //console.log('bnre station: '+nbreStations);
             //afficheur.afficheNbreStations(nbreStations);
             let module_type = "";
             let valTemp = "";
+            let valHydro='';
+            let timestamp='';
+
+            let tabTemperature=[];
 
 
-            for (i=0;i<nbreStations;i++) {
-                for (modType in reponse['body'][i]['module_types']) {
-                    if (reponse['body'][i]['module_types'][modType] === 'NAModule1') {
-                        module_type =  modType;
-                        console.log('Module type: ' + module_type)
+            try{
+                for (i=0;i<nbreStations;i++) {
+                    for (modType in reponse['body'][i]['module_types']) {
+                        if (reponse['body'][i]['module_types'][modType] === 'NAModule1') {
+                            module_type =  modType;
+                            //console.log('Module type: ' + module_type)
+                        }
                     }
-                }
-                for (temps in reponse['body'][i]['measures'][module_type]['res']) {
-                    valTemp = temps;
-                    console.log('température: ' + valTemp[0])
+                    for (stamp in reponse['body'][i]['measures'][module_type]['res']) {
+                        timestamp = stamp;
+                        //console.log('timestamp: '+timestamp);
+                        console.log('heure de capture: '+timeConverter(timestamp))
+                    }
+                    valTemp=reponse['body'][i]['measures'][module_type]['res'][timestamp][0];
+                    valHydro=reponse['body'][i]['measures'][module_type]['res'][timestamp][1];
+                    tabTemperature.push(valTemp);
+                    console.log('tab des tempé: '+tabTemperature.length)
+
+                    console.log(`température ${valTemp} et hydro ${valHydro}`)
+
+                    console.log(i);
 
                 }
-                console.log(i);
-                // console.log(reponse2['body'][i]['measures'][module]['res'][valTemp][0]);
+
             }
+            catch (e) {
+                console.log('erreur sur le retour de la netatmo: '+e);
+            }
+
 
 
 
@@ -252,6 +272,27 @@ function retourToken(r){
         }
     }
 
+    function average(array){
+            let avg;
+
+
+            return avg;
+    }
+
+
+
+    function timeConverter(timestamp){
+        let a = new Date(timestamp * 1000);
+        let months = ['Jan','Fev','Mar','Avr','Mai','Juin','Juil','Aout','Sep','Oct','Nov','Dec'];
+        let year = a.getFullYear();
+        let month = months[a.getMonth()];
+        let date = a.getDate();
+        let hour = a.getHours();
+        let min = a.getMinutes();
+        let sec = a.getSeconds();
+        let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+        return time;
+    }
 
 
 

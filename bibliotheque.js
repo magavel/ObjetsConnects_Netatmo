@@ -189,6 +189,39 @@ function carre(n){
 }
 
 
+
+Math.average=function (array){
+    let avg=0;
+    let moy=0;
+
+    for (let i = 0; i<array.length; i++){
+        avg += (array[i])*1;
+    }
+    moy = (avg/array.length);
+
+    return moy;
+}
+
+
+
+
+
+function timeConverter(timestamp){
+    let a = new Date(timestamp * 1000);
+    let months = ['Jan','Fev','Mar','Avr','Mai','Juin','Juil','Aout','Sep','Oct','Nov','Dec'];
+    let year = a.getFullYear();
+    let month = months[a.getMonth()];
+    let date = a.getDate();
+    let hour = a.getHours();
+    let min = a.getMinutes();
+    let sec = a.getSeconds();
+    let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    return time;
+}
+
+
+
+
 //////////////////////////////////////////////////////////////////
 //////////:     STRING                                  //////////
 //////////////////////////////////////////////////////////////////

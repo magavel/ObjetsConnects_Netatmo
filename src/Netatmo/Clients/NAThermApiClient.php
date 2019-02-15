@@ -3,9 +3,9 @@
 namespace Netatmo\Clients;
 
 /**
- * avel THERMOSTAT API PHP CLIENT
+ * NETATMO avel THERMOSTAT API PHP CLIENT
  *
- * For more details upon avel API, please check https://dev.netatmo.com/doc
+ * For more details upon NETATMO avel API, please check https://dev.netatmo.com/doc
  * @author Originally written by Enzo Macri <enzo.macri@netatmo.com>
  */
 class NAThermApiClient extends NAApiClient

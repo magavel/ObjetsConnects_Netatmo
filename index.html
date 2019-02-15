@@ -87,6 +87,8 @@ Projet présent sur: <a href=" https://github.com/magavel/ObjetsConnects_Netatmo
 
 
         function getValueNetatmo(r) {
+            let circles=[];
+            let markers=[];
             let reponse = JSON.parse(r.responseText);
             //console.log(reponse['body'][19].place.location);
             //console.log(reponse['body'][0]);
@@ -140,22 +142,25 @@ Projet présent sur: <a href=" https://github.com/magavel/ObjetsConnects_Netatmo
                         fillColor: '#f03',
                         fillOpacity: 0.5,
                         radius: 100
-                    }).addTo(map);
+                    });
+                    circles.push(circle);
                     circle.bindPopup(`Heure de mesure: ${timeConverter(timestamp)} <br> Température: ${valTemp}°`);
                     let marker = L.marker([latitude, longitude]).addTo(map);
+                    markers.push(marker);
 
-
-                    var heat = L.heatLayer([
+                    //var heat = L.heatLayer([
                         //[latitude, longitude, 0.2], // lat, lng, intensity
-                        [latitude, longitude, valTemp], // lat, lng, intensity
+                     //   [latitude, longitude, valTemp], // lat, lng, intensity
 
-                    ], {radius: 25}).addTo(map);
+                   // ], {radius: 25}).addTo(map);
 
 
                     afficheur.afficheNbreStations(nbreStations);
                     afficheur.afficherMoyenneStation(Math.average(tabTemperature))
 
                 }
+
+
 
             }
             catch (e) {

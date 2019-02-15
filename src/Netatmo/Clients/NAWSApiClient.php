@@ -4,9 +4,9 @@ namespace Netatmo\Clients;
 
 
 /**
- * avel WEATHER STATION API PHP CLIENT
+ * NETATMO avel WEATHER STATION API PHP CLIENT
  *
- * For more details upon avel API Please check https://dev.netatmo.com/doc
+ * For more details upon NETATMO avel API Please check https://dev.netatmo.com/doc
  * @author Originally written by Enzo Macri <enzo.macri@netatmo.com>
  */
 class NAWSApiClient extends NAApiClient

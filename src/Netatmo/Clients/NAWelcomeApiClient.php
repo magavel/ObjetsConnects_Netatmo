@@ -7,9 +7,9 @@ use Netatmo\Exceptions\NAClientException;
 use Netatmo\Common\NARestErrorCode;
 
 /**
- * avel Welcome API PHP CLIENT
+ * NETATMO avel Welcome API PHP CLIENT
  *
- * For more details upon avel API, please check https://dev.netatmo.com/doc
+ * For more details upon NETATMO avel API, please check https://dev.netatmo.com/doc
  * @author Originally written by Enzo Macri <enzo.macri@netatmo.com>
  */
 class NAWelcomeApiClient extends NAApiClient
